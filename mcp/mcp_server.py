@@ -13,10 +13,10 @@ Tools exposed:
 """
 
 import json
-import uuid
 import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 import requests as req
-from http.server import HTTPServer, BaseHTTPRequestHandler
 
 NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2022-06-28"
@@ -44,7 +44,10 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "database_id": {"type": "string", "description": "The database ID to query"},
+                "database_id": {
+                    "type": "string",
+                    "description": "The database ID to query",
+                },
             },
             "required": ["database_id"],
         },
@@ -66,7 +69,10 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "database_id": {"type": "string", "description": "The database ID to retrieve"},
+                "database_id": {
+                    "type": "string",
+                    "description": "The database ID to retrieve",
+                },
             },
             "required": ["database_id"],
         },
@@ -74,6 +80,7 @@ TOOLS = [
 ]
 
 # ── Tool Execution ──────────────────────────────────────────
+
 
 def _notion_headers(token):
     return {
@@ -93,12 +100,17 @@ def execute_tool(tool_name, arguments, notion_token):
             if arguments.get("query"):
                 body["query"] = arguments["query"]
             if arguments.get("filter_object"):
-                body["filter"] = {"property": "object", "value": arguments["filter_object"]}
+                body["filter"] = {
+                    "property": "object",
+                    "value": arguments["filter_object"],
+                }
             resp = req.post(f"{NOTION_API}/search", headers=headers, json=body)
 
         elif tool_name == "notion_query_database":
             db_id = arguments["database_id"]
-            resp = req.post(f"{NOTION_API}/databases/{db_id}/query", headers=headers, json={})
+            resp = req.post(
+                f"{NOTION_API}/databases/{db_id}/query", headers=headers, json={}
+            )
 
         elif tool_name == "notion_retrieve_page":
             page_id = arguments["page_id"]
@@ -112,7 +124,9 @@ def execute_tool(tool_name, arguments, notion_token):
             return {"error": f"Unknown tool: {tool_name}"}
 
         if resp.status_code >= 400:
-            return {"error": f"Notion API error {resp.status_code}: {resp.json().get('message', '')}"}
+            return {
+                "error": f"Notion API error {resp.status_code}: {resp.json().get('message', '')}"
+            }
 
         return resp.json()
 
@@ -121,6 +135,7 @@ def execute_tool(tool_name, arguments, notion_token):
 
 
 # ── JSON-RPC MCP Handler ────────────────────────────────────
+
 
 class MCPHandler(BaseHTTPRequestHandler):
     """HTTP handler implementing MCP Streamable HTTP transport (JSON-RPC)."""
@@ -163,7 +178,9 @@ class MCPHandler(BaseHTTPRequestHandler):
             arguments = params.get("arguments", {})
             tool_result = execute_tool(tool_name, arguments, self.notion_token)
             result = {
-                "content": [{"type": "text", "text": json.dumps(tool_result, default=str)}],
+                "content": [
+                    {"type": "text", "text": json.dumps(tool_result, default=str)}
+                ],
                 "isError": "error" in tool_result,
             }
         elif method == "notifications/initialized":

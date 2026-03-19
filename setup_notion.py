@@ -11,38 +11,75 @@ This script will:
 
 import os
 import sys
+
 import requests
-import json
 
 NOTION_API = "https://api.notion.com/v1"
 NOTION_VERSION = "2022-06-28"
 
 # ── Sample Life Events ──────────────────────────────────────
 SAMPLE_EVENTS = [
-    {"event": "Started learning programming",    "date": "2021-03-10", "impact": "High"},
-    {"event": "Built first website",             "date": "2021-08-15", "impact": "Medium"},
-    {"event": "Learned Python & Data Science",   "date": "2022-01-20", "impact": "High"},
-    {"event": "First freelance project",         "date": "2022-06-05", "impact": "Medium"},
-    {"event": "Started learning AI/ML",          "date": "2023-01-15", "impact": "High"},
-    {"event": "Built first AI project",          "date": "2023-07-10", "impact": "High"},
-    {"event": "Won a hackathon",                 "date": "2024-02-28", "impact": "High"},
-    {"event": "Started university research",     "date": "2024-05-01", "impact": "High"},
-    {"event": "Published first tech article",    "date": "2024-09-12", "impact": "Medium"},
-    {"event": "Explored metagenomics & biotech", "date": "2025-02-20", "impact": "Medium"},
+    {"event": "Started learning programming", "date": "2021-03-10", "impact": "High"},
+    {"event": "Built first website", "date": "2021-08-15", "impact": "Medium"},
+    {"event": "Learned Python & Data Science", "date": "2022-01-20", "impact": "High"},
+    {"event": "First freelance project", "date": "2022-06-05", "impact": "Medium"},
+    {"event": "Started learning AI/ML", "date": "2023-01-15", "impact": "High"},
+    {"event": "Built first AI project", "date": "2023-07-10", "impact": "High"},
+    {"event": "Won a hackathon", "date": "2024-02-28", "impact": "High"},
+    {"event": "Started university research", "date": "2024-05-01", "impact": "High"},
+    {"event": "Published first tech article", "date": "2024-09-12", "impact": "Medium"},
+    {
+        "event": "Explored metagenomics & biotech",
+        "date": "2025-02-20",
+        "impact": "Medium",
+    },
 ]
 
 SAMPLE_JOURNALS = [
-    {"content": "Today I decided to learn programming. I feel excited and a bit nervous, but I know this is the right path for me.", "date": "2021-03-10"},
-    {"content": "Just finished my first website! It's simple, but I'm proud of it. The feeling of creating something from nothing is amazing.", "date": "2021-08-15"},
-    {"content": "Python is incredible. Data science opens up so many possibilities. I spent the whole weekend exploring pandas and matplotlib.", "date": "2022-01-20"},
-    {"content": "Got my first client! The project is challenging but I'm learning so much. Real-world problems are different from tutorials.", "date": "2022-06-05"},
-    {"content": "AI is the future. I've been diving deep into machine learning and neural networks. The math is hard but fascinating.", "date": "2023-01-15"},
-    {"content": "My AI project actually works! It can classify images with 95% accuracy. This is the most rewarding thing I've ever built.", "date": "2023-07-10"},
-    {"content": "We won the hackathon! 48 hours of intense coding, but our AI-powered solution impressed the judges.", "date": "2024-02-28"},
-    {"content": "Starting research at the university. The academic world is different from self-learning but equally exciting.", "date": "2024-05-01"},
-    {"content": "Published my first article about AI applications. Getting positive feedback from the community feels great.", "date": "2024-09-12"},
-    {"content": "Metagenomics is fascinating — combining biology with computational analysis could change the world.", "date": "2025-02-20"},
-    {"content": "Looking back at my journey, I've come so far. From a total beginner to building AI systems. Grateful for every struggle.", "date": "2025-03-15"},
+    {
+        "content": "Today I decided to learn programming. I feel excited and a bit nervous, but I know this is the right path for me.",
+        "date": "2021-03-10",
+    },
+    {
+        "content": "Just finished my first website! It's simple, but I'm proud of it. The feeling of creating something from nothing is amazing.",
+        "date": "2021-08-15",
+    },
+    {
+        "content": "Python is incredible. Data science opens up so many possibilities. I spent the whole weekend exploring pandas and matplotlib.",
+        "date": "2022-01-20",
+    },
+    {
+        "content": "Got my first client! The project is challenging but I'm learning so much. Real-world problems are different from tutorials.",
+        "date": "2022-06-05",
+    },
+    {
+        "content": "AI is the future. I've been diving deep into machine learning and neural networks. The math is hard but fascinating.",
+        "date": "2023-01-15",
+    },
+    {
+        "content": "My AI project actually works! It can classify images with 95% accuracy. This is the most rewarding thing I've ever built.",
+        "date": "2023-07-10",
+    },
+    {
+        "content": "We won the hackathon! 48 hours of intense coding, but our AI-powered solution impressed the judges.",
+        "date": "2024-02-28",
+    },
+    {
+        "content": "Starting research at the university. The academic world is different from self-learning but equally exciting.",
+        "date": "2024-05-01",
+    },
+    {
+        "content": "Published my first article about AI applications. Getting positive feedback from the community feels great.",
+        "date": "2024-09-12",
+    },
+    {
+        "content": "Metagenomics is fascinating — combining biology with computational analysis could change the world.",
+        "date": "2025-02-20",
+    },
+    {
+        "content": "Looking back at my journey, I've come so far. From a total beginner to building AI systems. Grateful for every struggle.",
+        "date": "2025-03-15",
+    },
 ]
 
 
@@ -62,7 +99,9 @@ def api_call(method, endpoint, token, data=None):
         resp = requests.patch(url, headers=headers, json=data)
 
     if resp.status_code >= 400:
-        raise Exception(f"API Error {resp.status_code}: {resp.json().get('message', resp.text[:300])}")
+        raise Exception(
+            f"API Error {resp.status_code}: {resp.json().get('message', resp.text[:300])}"
+        )
     return resp.json()
 
 
@@ -81,9 +120,12 @@ def main():
     # ── Find pages ──────────────────────────────────────────
     print("\n🔍 Searching for available pages...")
     try:
-        search_result = api_call("POST", "/search", token, {
-            "filter": {"property": "object", "value": "page"}
-        })
+        search_result = api_call(
+            "POST",
+            "/search",
+            token,
+            {"filter": {"property": "object", "value": "page"}},
+        )
         results = search_result.get("results", [])
     except Exception as e:
         print(f"❌ Error connecting to Notion: {e}")
@@ -102,20 +144,22 @@ def main():
     for i, page in enumerate(results[:10]):
         title = "Untitled"
         props = page.get("properties", {})
-        for key, val in props.items():
+        for _, val in props.items():
             if val.get("type") == "title":
                 title_arr = val.get("title", [])
                 if title_arr:
                     title = title_arr[0].get("plain_text", "Untitled")
                     break
         pages.append((page["id"], title))
-        print(f"   [{i+1}] {title}")
+        print(f"   [{i + 1}] {title}")
 
     print()
-    choice = input(f"Select a parent page (1-{len(pages)}) or press Enter for [{pages[0][1]}]: ").strip()
+    choice = input(
+        f"Select a parent page (1-{len(pages)}) or press Enter for [{pages[0][1]}]: "
+    ).strip()
     if choice and choice.isdigit() and 1 <= int(choice) <= len(pages):
-        parent_id = pages[int(choice)-1][0]
-        parent_title = pages[int(choice)-1][1]
+        parent_id = pages[int(choice) - 1][0]
+        parent_title = pages[int(choice) - 1][1]
     else:
         parent_id = pages[0][0]
         parent_title = pages[0][1]
@@ -124,23 +168,28 @@ def main():
 
     # ── Create Life Events Database ─────────────────────────
     print("\n📋 Creating 'Life Events' database...")
-    events_db = api_call("POST", "/databases", token, {
-        "parent": {"type": "page_id", "page_id": parent_id},
-        "title": [{"type": "text", "text": {"content": "Life Events"}}],
-        "properties": {
-            "Event": {"title": {}},
-            "Date": {"date": {}},
-            "Impact": {
-                "select": {
-                    "options": [
-                        {"name": "High", "color": "red"},
-                        {"name": "Medium", "color": "yellow"},
-                        {"name": "Low", "color": "green"},
-                    ]
-                }
+    events_db = api_call(
+        "POST",
+        "/databases",
+        token,
+        {
+            "parent": {"type": "page_id", "page_id": parent_id},
+            "title": [{"type": "text", "text": {"content": "Life Events"}}],
+            "properties": {
+                "Event": {"title": {}},
+                "Date": {"date": {}},
+                "Impact": {
+                    "select": {
+                        "options": [
+                            {"name": "High", "color": "red"},
+                            {"name": "Medium", "color": "yellow"},
+                            {"name": "Low", "color": "green"},
+                        ]
+                    }
+                },
             },
         },
-    })
+    )
     events_db_id = events_db["id"]
 
     # Verify actual property names
@@ -151,21 +200,28 @@ def main():
     ev_select = prop_names.get("select", "Impact")
 
     print(f"   ✅ Created! ID: {events_db_id}")
-    print(f"   📌 Properties: title='{ev_title}', date='{ev_date}', select='{ev_select}'")
+    print(
+        f"   📌 Properties: title='{ev_title}', date='{ev_date}', select='{ev_select}'"
+    )
 
     # ── Populate Events ─────────────────────────────────────
     print("   📝 Adding sample events...")
     success = 0
     for ev in SAMPLE_EVENTS:
         try:
-            api_call("POST", "/pages", token, {
-                "parent": {"database_id": events_db_id},
-                "properties": {
-                    ev_title: {"title": [{"text": {"content": ev["event"]}}]},
-                    ev_date: {"date": {"start": ev["date"]}},
-                    ev_select: {"select": {"name": ev["impact"]}},
+            api_call(
+                "POST",
+                "/pages",
+                token,
+                {
+                    "parent": {"database_id": events_db_id},
+                    "properties": {
+                        ev_title: {"title": [{"text": {"content": ev["event"]}}]},
+                        ev_date: {"date": {"start": ev["date"]}},
+                        ev_select: {"select": {"name": ev["impact"]}},
+                    },
                 },
-            })
+            )
             success += 1
         except Exception as e:
             print(f"   ⚠️  Error: {e}")
@@ -173,14 +229,19 @@ def main():
 
     # ── Create Journal Database ─────────────────────────────
     print("\n📓 Creating 'Journal Entries' database...")
-    journal_db = api_call("POST", "/databases", token, {
-        "parent": {"type": "page_id", "page_id": parent_id},
-        "title": [{"type": "text", "text": {"content": "Journal Entries"}}],
-        "properties": {
-            "Entry": {"title": {}},
-            "Date": {"date": {}},
+    journal_db = api_call(
+        "POST",
+        "/databases",
+        token,
+        {
+            "parent": {"type": "page_id", "page_id": parent_id},
+            "title": [{"type": "text", "text": {"content": "Journal Entries"}}],
+            "properties": {
+                "Entry": {"title": {}},
+                "Date": {"date": {}},
+            },
         },
-    })
+    )
     journal_db_id = journal_db["id"]
 
     actual_props_j = journal_db.get("properties", {})
@@ -196,13 +257,18 @@ def main():
     success = 0
     for entry in SAMPLE_JOURNALS:
         try:
-            api_call("POST", "/pages", token, {
-                "parent": {"database_id": journal_db_id},
-                "properties": {
-                    j_title: {"title": [{"text": {"content": entry["content"]}}]},
-                    j_date: {"date": {"start": entry["date"]}},
+            api_call(
+                "POST",
+                "/pages",
+                token,
+                {
+                    "parent": {"database_id": journal_db_id},
+                    "properties": {
+                        j_title: {"title": [{"text": {"content": entry["content"]}}]},
+                        j_date: {"date": {"start": entry["date"]}},
+                    },
                 },
-            })
+            )
             success += 1
         except Exception as e:
             print(f"   ⚠️  Error: {e}")

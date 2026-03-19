@@ -22,14 +22,16 @@ def format_timeline(timeline_data):
             items += (
                 f'<div style="display:flex;align-items:baseline;gap:12px;margin-bottom:14px;">'
                 f'<span style="font-weight:700;font-size:1.1rem;'
-                f'background:linear-gradient(135deg,#7C3AED,#EC4899);'
-                f'-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+                f"background:linear-gradient(135deg,#7C3AED,#EC4899);"
+                f"-webkit-background-clip:text;-webkit-text-fill-color:transparent;"
                 f'white-space:nowrap;">{year}</span>'
                 f'<span style="color:#CBD5E1;">{desc}</span>'
-                f'</div>'
+                f"</div>"
             )
         else:
-            items += f'<p style="color:#CBD5E1;margin-bottom:10px;">• {_escape(item)}</p>'
+            items += (
+                f'<p style="color:#CBD5E1;margin-bottom:10px;">• {_escape(item)}</p>'
+            )
 
     return items
 
@@ -46,10 +48,10 @@ def format_chapters(chapters_data):
         title = _escape(str(item))
         items += (
             f'<div style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(236,72,153,0.04));'
-            f'border-left:3px solid #7C3AED;border-radius:0 12px 12px 0;'
+            f"border-left:3px solid #7C3AED;border-radius:0 12px 12px 0;"
             f'padding:14px 18px;margin-bottom:12px;">'
             f'<span style="color:#F1F5F9;font-weight:600;">{title}</span>'
-            f'</div>'
+            f"</div>"
         )
 
     return items
@@ -106,11 +108,11 @@ def format_insights(insights_data):
         items += (
             f'<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">'
             f'<div style="min-width:36px;height:36px;border-radius:10px;'
-            f'background:linear-gradient(135deg,{color}33,{color}11);'
-            f'display:flex;align-items:center;justify-content:center;'
-            f'font-weight:700;font-size:0.9rem;color:{color};">{idx+1}</div>'
+            f"background:linear-gradient(135deg,{color}33,{color}11);"
+            f"display:flex;align-items:center;justify-content:center;"
+            f'font-weight:700;font-size:0.9rem;color:{color};">{idx + 1}</div>'
             f'<span style="color:#CBD5E1;">{text}</span>'
-            f'</div>'
+            f"</div>"
         )
 
     return items

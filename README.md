@@ -55,9 +55,15 @@ life-doc-ai/
 ├── utils/
 │   └── formatter.py               # HTML formatters for UI cards
 │
+├── tests/
+│   └── test_basic.py              # Pytest testing suite
+│
+├── .streamlit/
+│   └── config.toml                # Premium Dark Theme configuration
+│
 ├── setup_notion.py                # 🛠️ Script to auto-create Notion databases + sample data
 └── data/
-    └── sample_output.json         # Example output structure
+    └── sample_output.json         # Personalized developer journey sample data
 ```
 
 ## 🚀 Quick Start
@@ -98,6 +104,12 @@ OPENAI_API_KEY=your_openai_key  # Optional
 ### 4. Run the app
 ```bash
 streamlit run app.py
+```
+
+### 5. Run the Tests (Optional)
+To ensure all core dependencies and configurations are working:
+```bash
+pytest tests/
 ```
 
 ## 🔧 How It Uses Notion MCP

@@ -1,11 +1,16 @@
-import streamlit as st
-import json
-import os
 import time
+
+import streamlit as st
+
 from agent.documentary_agent import DocumentaryAgent
-from utils.formatter import format_timeline, format_chapters, format_story, format_insights
 from config import NOTION_TOKEN
-from mcp.mcp_server import start_mcp_server, is_server_running
+from mcp.mcp_server import is_server_running, start_mcp_server
+from utils.formatter import (
+    format_chapters,
+    format_insights,
+    format_story,
+    format_timeline,
+)
 
 # ── Start MCP Server on app load ─────────────────────────────
 if NOTION_TOKEN and "your_" not in NOTION_TOKEN:
@@ -20,7 +25,8 @@ st.set_page_config(
 )
 
 # ── Custom CSS ───────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <style>
 /* ── Google Font ── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
@@ -309,19 +315,25 @@ header[data-testid="stHeader"] { background: transparent !important; }
 .delay-3 { animation-delay: 0.3s; opacity: 0; }
 .delay-4 { animation-delay: 0.4s; opacity: 0; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ── Glow orbs ────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <div class="glow-orb orb-1"></div>
 <div class="glow-orb orb-2"></div>
 <div class="glow-orb orb-3"></div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ── Hero Section ─────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <div class="hero-container">
     <div class="hero-badge">✦ Powered by AI + Notion MCP</div>
     <div class="hero-title">Life Doc AI</div>
@@ -330,13 +342,17 @@ st.markdown("""
         AI-crafted documentary of your personal journey.
     </div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ── Generate Button (centered) ───────────────────────────────
-col_l, col_c, col_r = st.columns([1, 2, 1])
+_, col_c, _ = st.columns([1, 2, 1])
 with col_c:
-    generate_clicked = st.button("🎬  Generate My Life Documentary", type="primary", use_container_width=True)
+    generate_clicked = st.button(
+        "🎬  Generate My Life Documentary", type="primary", use_container_width=True
+    )
 
 
 # ── Main Logic ───────────────────────────────────────────────
@@ -354,26 +370,40 @@ if generate_clicked:
     ]
 
     for msg, pct in steps:
-        status_text.markdown(f"<p style='text-align:center; color:#94A3B8; font-size:0.95rem;'>{msg}</p>", unsafe_allow_html=True)
+        status_text.markdown(
+            f"<p style='text-align:center; color:#94A3B8; font-size:0.95rem;'>{msg}</p>",
+            unsafe_allow_html=True,
+        )
         progress_bar.progress(pct)
         time.sleep(0.4)
 
-    agent = DocumentaryAgent()
-    result = agent.generate_documentary()
+    try:
+        agent = DocumentaryAgent()
+        result = agent.generate_documentary()
 
-    progress_bar.progress(100)
-    status_text.empty()
-    progress_bar.empty()
+        progress_bar.progress(100)
+        status_text.empty()
+        progress_bar.empty()
 
-    # ── Success banner ──
-    st.success("✨ Your Life Documentary is Ready!")
+        # ── Success banner ──
+        st.success("✨ Your Life Documentary is Ready!")
+
+    except Exception as e:
+        progress_bar.empty()
+        status_text.empty()
+        st.error(f"🚨 An error occurred while generating the documentary: {str(e)}")
+        st.info(
+            "💡 Please check your Notion Token, database IDs, or API limits in the .env file."
+        )
+        st.stop()
 
     # ── Metrics row ──
     events = result.get("timeline", [])
     chapters = result.get("chapters", [])
     insights = result.get("insights", [])
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="metrics-row animate-in">
         <div class="metric-card">
             <div class="metric-value">{len(events)}</div>
@@ -388,14 +418,19 @@ if generate_clicked:
             <div class="metric-label">Insights</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     # ── Tabs ──
-    tab1, tab2, tab3, tab4 = st.tabs(["📜  Story", "⏳  Timeline", "📚  Chapters", "💡  Insights"])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["📜  Story", "⏳  Timeline", "📚  Chapters", "💡  Insights"]
+    )
 
     with tab1:
         story_content = format_story(result.get("story", ""))
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="glass-card animate-in delay-1">
             <div class="card-header">
                 <div class="card-icon icon-purple">📜</div>
@@ -403,12 +438,15 @@ if generate_clicked:
             </div>
             <div class="card-body">{story_content}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     with tab2:
         ai_timeline = result.get("ai_timeline", "")
         base_timeline = format_timeline(result.get("timeline", []))
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="glass-card animate-in delay-1">
             <div class="card-header">
                 <div class="card-icon icon-cyan">🤖</div>
@@ -424,12 +462,15 @@ if generate_clicked:
             </div>
             <div class="card-body">{base_timeline}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     with tab3:
         ai_chapters = result.get("ai_chapters", "")
         base_chapters = format_chapters(result.get("chapters", []))
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="glass-card animate-in delay-1">
             <div class="card-header">
                 <div class="card-icon icon-pink">🤖</div>
@@ -445,12 +486,15 @@ if generate_clicked:
             </div>
             <div class="card-body">{base_chapters}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     with tab4:
         ai_insights = result.get("ai_insights", "")
         base_insights = format_insights(result.get("insights", []))
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="glass-card animate-in delay-1">
             <div class="card-header">
                 <div class="card-icon icon-amber">🤖</div>
@@ -466,23 +510,31 @@ if generate_clicked:
             </div>
             <div class="card-body">{base_insights}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 
 # ── MCP Status ───────────────────────────────────────────────
 mcp_status = "🟢 MCP Server Active" if is_server_running() else "🔴 MCP Server Offline"
-st.markdown(f"""
+st.markdown(
+    f"""
 <div style="text-align:center;margin-bottom:1rem;">
     <span style="font-size:0.8rem;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);
     padding:5px 14px;border-radius:20px;color:#A78BFA;font-weight:500;">{mcp_status}</span>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ── Footer ───────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <div class="fancy-divider"></div>
 <div class="app-footer">
     Built with ❤️ for the <a href="https://dev.to/challenges/notion-2026-03-04">Notion MCP Challenge</a> &nbsp;·&nbsp; 
     Life Doc AI © 2025 &nbsp;·&nbsp; Powered by Notion MCP + Python
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)

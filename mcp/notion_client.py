@@ -7,6 +7,7 @@ life events and journal entries.
 """
 
 import json
+
 import httpx
 
 MCP_SERVER_URL = "http://127.0.0.1:3100/mcp"
@@ -96,9 +97,12 @@ def get_life_events():
     if not NOTION_DATABASE_EVENTS or "your_" in NOTION_DATABASE_EVENTS:
         return []
 
-    result = _call_mcp_tool("notion_query_database", {
-        "database_id": NOTION_DATABASE_EVENTS,
-    })
+    result = _call_mcp_tool(
+        "notion_query_database",
+        {
+            "database_id": NOTION_DATABASE_EVENTS,
+        },
+    )
 
     if not result or "results" not in result:
         return []
@@ -129,9 +133,12 @@ def get_journal_entries():
     if not NOTION_DATABASE_JOURNAL or "your_" in NOTION_DATABASE_JOURNAL:
         return []
 
-    result = _call_mcp_tool("notion_query_database", {
-        "database_id": NOTION_DATABASE_JOURNAL,
-    })
+    result = _call_mcp_tool(
+        "notion_query_database",
+        {
+            "database_id": NOTION_DATABASE_JOURNAL,
+        },
+    )
 
     if not result or "results" not in result:
         return []
