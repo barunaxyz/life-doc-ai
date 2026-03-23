@@ -70,7 +70,7 @@ life-doc-ai/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/life-doc-ai.git
+git clone https://github.com/barunaxyz/life-doc-ai.git
 cd life-doc-ai
 ```
 
