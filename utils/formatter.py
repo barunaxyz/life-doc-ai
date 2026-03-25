@@ -45,12 +45,22 @@ def format_chapters(chapters_data):
 
     items = ""
     for idx, item in enumerate(chapters_data, 1):
-        title = _escape(str(item))
+        title_str = str(item)
+        if " — " in title_str:
+            main_title, sub_title = title_str.split(" — ", 1)
+            title_html = (
+                f"{_escape(main_title.strip())}<br>"
+                f"<span style='font-size:0.85rem;color:#94A3B8;font-weight:400;display:inline-block;margin-top:6px;'>"
+                f"{_escape(sub_title.strip())}</span>"
+            )
+        else:
+            title_html = _escape(title_str)
+
         items += (
             f'<div style="background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(236,72,153,0.04));'
             f"border-left:3px solid #7C3AED;border-radius:0 12px 12px 0;"
             f'padding:14px 18px;margin-bottom:12px;">'
-            f'<span style="color:#F1F5F9;font-weight:600;">{title}</span>'
+            f'<span style="color:#F1F5F9;font-weight:600;line-height:1.4;">{title_html}</span>'
             f"</div>"
         )
 

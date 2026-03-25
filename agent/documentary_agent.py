@@ -113,8 +113,7 @@ class DocumentaryAgent:
                     '<p style="font-size:1.05rem;line-height:1.9;color:#CBD5E1;margin-bottom:1.4rem;">'
                     "From there, your path was anything but ordinary. "
                 )
-                mid_events = sorted_events[1:-1]
-                highlights = mid_events[:4]  # Show up to 4 middle events
+                highlights = sorted_events[1:-1]  # Show all middle events
                 for i, ev in enumerate(highlights):
                     name = ev.get("event", "").lower()
                     date = self._fmt_date(ev.get("date", ""))
@@ -152,7 +151,7 @@ class DocumentaryAgent:
                 f'color:#7C3AED;font-weight:600;margin-bottom:1rem;">📓 From Your Journal — {len(journals)} Entries</p>'
             )
             sorted_journals = sorted(journals, key=lambda j: j.get("date", ""))
-            for j in sorted_journals[:4]:
+            for j in sorted_journals:
                 content = j.get("content", "")
                 if len(content) > 160:
                     content = content[:160] + "…"

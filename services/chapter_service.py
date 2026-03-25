@@ -6,13 +6,37 @@ def generate_chapters(timeline_data, journal_entries):
     if not timeline_data:
         return []
 
-    # Example logic: just divide events into groups of 3
-    chapters = []
-    chunk_size = max(1, len(timeline_data) // 3)
+    from collections import defaultdict
+    chapters_by_year = defaultdict(list)
+    
+    # Group events by year
+    for item in timeline_data:
+        try:
+            year = item.split("—")[0].strip()[:4]
+            if year.isdigit():
+                chapters_by_year[year].append(item)
+        except Exception:
+            pass
 
-    for i in range(0, len(timeline_data), chunk_size):
-        chunk = timeline_data[i : i + chunk_size]
-        chapter_title = f"Chapter {(i // chunk_size) + 1} — The {chunk[0].split('—')[0].strip()} Era"
+    chapters = []
+    chapter_num = 1
+    
+    for year, events in sorted(chapters_by_year.items()):
+        # Try to find a high-impact event for the chapter headline, else take the first one
+        prominent_event = events[-1] if events else ""
+        for ev in events:
+            if "(High)" in ev or "(high)" in ev:
+                prominent_event = ev
+                break
+                
+        try:
+            parts = prominent_event.split("—", 1)
+            event_name = parts[1].split("(")[0].strip()
+            chapter_title = f"Chapter {chapter_num} ({year}) — Defining Milestone: '{event_name}'"
+        except Exception:
+            chapter_title = f"Chapter {chapter_num} — The {year} Era"
+            
         chapters.append(chapter_title)
+        chapter_num += 1
 
     return chapters
